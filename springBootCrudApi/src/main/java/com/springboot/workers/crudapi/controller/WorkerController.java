@@ -1,6 +1,5 @@
 package com.springboot.workers.crudapi.controller;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -17,39 +16,39 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.springboot.workers.crudapi.model.Worker;
-import com.springboot.workers.crudapi.repository.WorkerRepository;
+import com.springboot.workers.crudapi.service.WorkerService;
 
 @RestController
 @RequestMapping("/worker")
 public class WorkerController {
 
 	@Autowired
-	private WorkerRepository workerRepository;
+	WorkerService workerService;
 
-	@GetMapping("/{id}")
-	public Worker showWorker(@PathVariable int id) throws SQLException {
-		return this.workerRepository.getWorkerById(id);
+	@GetMapping("/worker/{id}")
+	public Worker showWorker(@PathVariable int id) {
+		return workerService.getWorker(id);
 	}
 
 	@GetMapping("/all")
-	public List<Worker> showAllWorkers() throws SQLException {
-		return this.workerRepository.getAllWorkers();
+	public List<Worker> showWorkers() {
+		return workerService.getWorkers();
 	}
 
 	@PostMapping("/create")
 	@ResponseStatus(HttpStatus.CREATED)
-	public int createWorker(@RequestBody Worker worker) throws SQLException {
-		return this.workerRepository.addWorker(worker);
+	public String create(@RequestBody Worker worker) {
+		return workerService.createWorker(worker);
 	}
 
 	@PatchMapping("/update/{id}")
-	public String updateWorker(@RequestBody Map<String, String> params, @PathVariable int id) throws SQLException {
-		int rowsAffected = this.workerRepository.updateWorkerEmailById(params.get("email"), id);
-		return rowsAffected + " rows Affected";
+	public boolean update(@PathVariable int id, @RequestBody Map<String, String> requestBody) {
+		return workerService.updateWorker(id, requestBody.get("email"));
 	}
 
 	@DeleteMapping("/delete/{id}")
-	public int deleteWorker(@PathVariable int id) throws SQLException {
-		return this.workerRepository.deleteWorkerById(id);
+	public boolean delete(@PathVariable int id) {
+		return workerService.deleteWorkerById(id);
 	}
+
 }
